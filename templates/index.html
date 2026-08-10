@@ -1,0 +1,726 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sarker Bind Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0a0f;
+            color: #c8d6e5;
+            min-height: 100vh;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #1a1a2e; }
+        ::-webkit-scrollbar-thumb { background: #6c5ce7; border-radius: 10px; }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 30px 0 20px;
+            border-bottom: 2px solid #6c5ce7;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #00d2d3, #6c5ce7, #fd79a8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 2px;
+        }
+
+        .logo-sub {
+            font-size: 0.85rem;
+            color: #8395a7;
+            margin-top: 5px;
+        }
+
+        .logo-sub span {
+            color: #6c5ce7;
+            font-weight: bold;
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: #00b89420;
+            color: #00b894;
+            padding: 4px 18px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            border: 1px solid #00b89440;
+            margin-top: 8px;
+        }
+
+        /* Grid Layout */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: #14141f;
+            border: 1px solid #2d2d44;
+            border-radius: 14px;
+            padding: 20px 18px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            border-color: #6c5ce7;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(108, 92, 231, 0.15);
+        }
+
+        .card:active {
+            transform: scale(0.97);
+        }
+
+        .card .icon {
+            font-size: 1.6rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .card .title {
+            font-weight: 600;
+            font-size: 1rem;
+            color: #ecf0f1;
+        }
+
+        .card .desc {
+            font-size: 0.8rem;
+            color: #8395a7;
+            margin-top: 4px;
+        }
+
+        .card .badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: #6c5ce740;
+            color: #a29bfe;
+            font-size: 0.6rem;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        .card-danger:hover { border-color: #ff6b6b; }
+        .card-danger .badge { background: #ff6b6b40; color: #ff6b6b; }
+
+        .card-success:hover { border-color: #00b894; }
+        .card-success .badge { background: #00b89440; color: #00b894; }
+
+        /* Panel */
+        .panel {
+            background: #14141f;
+            border: 1px solid #2d2d44;
+            border-radius: 14px;
+            padding: 25px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .panel.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .panel-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #a29bfe;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .panel-title .back-btn {
+            background: none;
+            border: none;
+            color: #8395a7;
+            font-size: 1.4rem;
+            cursor: pointer;
+            transition: 0.2s;
+            padding: 0 8px;
+        }
+
+        .panel-title .back-btn:hover { color: #fff; }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: #8395a7;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            background: #0d0d17;
+            border: 1px solid #2d2d44;
+            border-radius: 10px;
+            color: #ecf0f1;
+            font-size: 0.95rem;
+            transition: 0.3s;
+            font-family: inherit;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #6c5ce7;
+            box-shadow: 0 0 0 3px #6c5ce730;
+        }
+
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .btn {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(108, 92, 231, 0.35);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c, #fd79a8);
+            color: #fff;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(231, 76, 60, 0.35);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #00b894, #00cec9);
+            color: #fff;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 184, 148, 0.35);
+        }
+
+        .btn-secondary {
+            background: #2d2d44;
+            color: #c8d6e5;
+        }
+
+        .btn-secondary:hover {
+            background: #3d3d5c;
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 0.8rem;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Output */
+        .output {
+            margin-top: 20px;
+            background: #0d0d17;
+            border-radius: 10px;
+            padding: 18px;
+            border: 1px solid #2d2d44;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .output.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .output .success { color: #00b894; }
+        .output .error { color: #ff6b6b; }
+        .output .info { color: #74b9ff; }
+        .output .warn { color: #fdcb6e; }
+        .output .highlight { color: #a29bfe; font-weight: bold; }
+
+        /* Spinner */
+        .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 3px solid #2d2d44;
+            border-top-color: #6c5ce7;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 25px 0 10px;
+            border-top: 1px solid #1a1a2e;
+            margin-top: 30px;
+            color: #576574;
+            font-size: 0.8rem;
+        }
+
+        .footer a {
+            color: #6c5ce7;
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .form-row { grid-template-columns: 1fr; }
+            .logo { font-size: 1.8rem; }
+            .grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .card { padding: 14px 12px; }
+            .card .title { font-size: 0.85rem; }
+        }
+
+        @media (max-width: 400px) {
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Header -->
+    <div class="header">
+        <div class="logo">Ⓜ️ SARKER BIND TOOL</div>
+        <div class="logo-sub">DEVELOPER : <span>M. SARKER</span></div>
+        <div class="status-badge">● SECURE & SAFE</div>
+    </div>
+
+    <!-- Menu Grid -->
+    <div id="menuGrid" class="grid">
+        <div class="card" onclick="openPanel('bindInfo')">
+            <span class="icon">📋</span>
+            <div class="title">Check Bind Info</div>
+            <div class="desc">View current email bind status</div>
+            <span class="badge">INFO</span>
+        </div>
+        <div class="card card-success" onclick="openPanel('bindEmail')">
+            <span class="icon">📧</span>
+            <div class="title">Bind Email</div>
+            <div class="desc">Bind a new recovery email</div>
+            <span class="badge">BIND</span>
+        </div>
+        <div class="card card-danger" onclick="openPanel('unbindEmail')">
+            <span class="icon">🔓</span>
+            <div class="title">Unbind Email</div>
+            <div class="desc">Remove bound email</div>
+            <span class="badge">UNBIND</span>
+        </div>
+        <div class="card" onclick="openPanel('changeBind')">
+            <span class="icon">🔄</span>
+            <div class="title">Change Bind Email</div>
+            <div class="desc">Replace with new email</div>
+            <span class="badge">CHANGE</span>
+        </div>
+        <div class="card" onclick="openPanel('cancelBind')">
+            <span class="icon">❌</span>
+            <div class="title">Cancel Bind Request</div>
+            <div class="desc">Cancel pending bind request</div>
+            <span class="badge">CANCEL</span>
+        </div>
+        <div class="card card-success" onclick="openPanel('eatToToken')">
+            <span class="icon">🔑</span>
+            <div class="title">EAT to Access Token</div>
+            <div class="desc">Convert EAT to Access Token</div>
+            <span class="badge">CONVERT</span>
+        </div>
+        <div class="card card-danger" onclick="openPanel('revokeToken')">
+            <span class="icon">🚫</span>
+            <div class="title">Revoke Access Token</div>
+            <div class="desc">Invalidate access token</div>
+            <span class="badge">REVOKE</span>
+        </div>
+        <div class="card" onclick="openPanel('loginHistory')">
+            <span class="icon">📜</span>
+            <div class="title">Get Login History</div>
+            <div class="desc">View account login records</div>
+            <span class="badge">HISTORY</span>
+        </div>
+        <div class="card" onclick="openPanel('boundAccounts')">
+            <span class="icon">🔗</span>
+            <div class="title">Check Bound Accounts</div>
+            <div class="desc">View linked platforms</div>
+            <span class="badge">PLATFORMS</span>
+        </div>
+        <div class="card" onclick="openPanel('ownerDetails')">
+            <span class="icon">👤</span>
+            <div class="title">Owner Details</div>
+            <div class="desc">Developer information</div>
+            <span class="badge">INFO</span>
+        </div>
+    </div>
+
+    <!-- Panel: Bind Info -->
+    <div id="panel-bindInfo" class="panel">
+        <div class="panel-title">
+            <button class="back-btn" onclick="closePanel('bindInfo')">✕</button>
+            📋 Check Bind Info
+        </div>
+        <div class="form-group">
+            <label>Access Token</label>
+            <input type="text" id="bindInfoToken" placeholder="Enter your access token">
+        </div>
+        <button class="btn btn-primary" onclick="execute('bindInfo')">🔍 Check Info</button>
+        <div id="output-bindInfo" class="output"></div>
+    </div>
+
+    <!-- Panel: Bind Email -->
+    <div id="panel-bindEmail" class="panel">
+        <div class="panel-title">
+            <button class="back-btn" onclick="closePanel('bindEmail')">✕</button>
+            📧 Bind Email
+        </div>
+        <div class="form-group">
+            <label>Access Token</label>
+            <input type="text" id="bindEmailToken" placeholder="Enter your access token">
+        </div>
+        <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" id="bindEmailAddr" placeholder="example@email.com">
+        </div>
+        <div class="form-group">
+            <label>OTP Code</label>
+            <input type="text" id="bindEmailOtp" placeholder="Enter OTP received">
+        </div>
+        <div class="form-group">
+            <label>Security Code (6 digits)</label>
+            <input type="password" id="bindEmailSec" placeholder="Set 6-digit security code" maxlength="6">
+        </div>
+        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+            <button class="btn btn-success" onclick="execute('bindEmailSend')">📤 Send OTP</button>
+            <button class="btn btn-primary" onclick="execute('bindEmailFinal')">🔗 Bind Email</button>
+        </div>
+        <div id="output-bindEmail" class="output"></div>
+    </div>
+
+    <!-- Panel: Unbind Email -->
+    <div id="panel-unbindEmail" class="panel">
+        <div class="panel-title">
+            <button class="back-btn" onclick="closePanel('unbindEmail')">✕</button>
+            🔓 Unbind Email
+        </div>
+        <div class="form-group">
+            <label>Access Token</label>
+            <input type="text" id="unbindToken" placeholder="Enter your access token">
+        </div>
+        <div class="form-group">
+            <label>Method</label>
+            <select id="unbindMethod">
+                <option value="1">OTP Verification</option>
+                <option value="2">Security Code</option>
+            </select>
+        </div>
+        <div class="form-group" id="unbindOtpGroup">
+            <label>OTP Code</label>
+            <input type="text" id="unbindOtp" placeholder="Enter OTP from your email">
+        </div>
+        <div class="form-group" id="unbindSecGroup" style="display:none;">
+            <label>Security Code (6 digits)</label>
+            <input type="password" id="unbindSec" placeholder="Enter your 6-digit security code" maxlength="6">
+        </div>
+        <button class="btn btn-danger" onclick="execute('unbindEmail')">🔓 Unbind Email</button>
+        <div id="output-unbindEmail" class="output"></div>
+    </div>
+
+    <!-- Panel: Change Bind -->
+    <div id="panel-changeBind" class="panel">
+        <div class="panel-title">
+            <button class="back-btn" onclick="closePanel('changeBind')">✕</button>
+            🔄 Change Bind Email
+        </div>
+        <div class="form-group">
+            <label>Access Token</label>
+            <input type="text" id="changeToken" placeholder="Enter your access token">
+        </div>
+        <div class="form-group">
+            <label>Method</label>
+            <select id="changeMethod">
+                <option value="1">OTP Verification</option>
+                <option value="2">Security Code</option>
+            </select>
+        </div>
+        <div class="form-group" id="changeOtpGroup">
+            <label>OTP from Current Email</label>
+            <input type="text" id="changeOtp" placeholder="Enter OTP from your current email">
+        </div>
+        <div class="form-group" id="changeSecGroup" style="display:none;">
+            <label>Current Security Code (6 digits)</label>
+            <input type="password" id="changeSec" placeholder="Enter your 6-digit security code" maxlength="6">
+        </div>
+        <div class="form-group">
+            <label>New Email Address</label>
+            <input type="email" id="changeNewEmail" placeholder="new-email@example.com">
+        </div>
+        <div class="form-group">
+            <label>OTP from New Email</label>
+            <input type="text" id="changeNewOtp" placeholder="Enter OTP from new email">
+        </div>
+        <button class="btn btn-primary" onclick="execute('changeBind')">🔄 Change Email</button>
+        <div id="output-changeBind" class="output"></div>
+    </div>
+
+    <!-- Panel: Cancel Bind -->
+    <div id="panel-cancelBind" class="panel">
+        <div class="panel-title">
+            <button class="back-btn" onclick="closePanel('cancelBind')">✕</button>
+            ❌ Cancel Bind Request
+        </div>
+        <div class="form-group">
+            <label>Access Token</label>
+            <input type="text" id="cancelToken" placeholder="Enter your access token">
+        </div>
+        <button class="btn btn-danger" onclick="execute('cancelBind')">❌ Cancel Request</button>
+        <div id="output-cancelBind" class="output"></div>
+    </div>
+
+    <!-- Panel: EAT to Token -->
+    <div id="panel-eatToToken" class="panel">
+        <div class="panel-title">
+            <button class="back-btn" onclick="closePanel('eatToToken')">✕</button>
+            🔑 EAT to Access Token
+        </div>
+        <div class="form-group">
+            <label>EAT Token or Full URL</label>
+            <input type="text" id="eatInput" placeholder="Paste EAT token or full URL">
+        </div>
+        <button class="btn btn-success" onclick="execute('eatToToken')">🔑 Convert</button>
+        <div id="output-eatToToken" class="output"></div>
+    </div>
+
+    <!-- Panel: Revoke Token -->
+    <div id="panel-revokeToken" class="panel">
+        <div class="panel-title">
+            <button class="back-btn" onclick="closePanel('revokeToken')">✕</button>
+            🚫 Revoke Access Token
+        </div>
+        <div class="form-group">
+            <label>Access Token</label>
+            <input type="text" id="revokeToken" placeholder="Enter token to revoke">
+        </div>
+        <button class="btn btn-danger" onclick="execute('revokeToken')">🚫 Revoke Token</button>
+        <div id="output-revokeToken" class="output"></div>
+    </div>
+
+    <!-- Panel: Login History -->
+    <div id="panel-loginHistory" class="panel">
+        <div class="panel-title">
+            <button class="back-btn" onclick="closePanel('loginHistory')">✕</button>
+            📜 Get Login History
+        </div>
+        <div class="form-group">
+            <label>Access Token or JWT</label>
+            <input type="text" id="historyToken" placeholder="Enter access token or JWT">
+        </div>
+        <button class="btn btn-primary" onclick="execute('loginHistory')">📜 Fetch History</button>
+        <div id="output-loginHistory" class="output"></div>
+    </div>
+
+    <!-- Panel: Bound Accounts -->
+    <div id="panel-boundAccounts" class="panel">
+        <div class="panel-title">
+            <button class="back-btn" onclick="closePanel('boundAccounts')">✕</button>
+            🔗 Check Bound Accounts
+        </div>
+        <div class="form-group">
+            <label>Access Token</label>
+            <input type="text" id="boundToken" placeholder="Enter your access token">
+        </div>
+        <button class="btn btn-primary" onclick="execute('boundAccounts')">🔗 Check Platforms</button>
+        <div id="output-boundAccounts" class="output"></div>
+    </div>
+
+    <!-- Panel: Owner Details -->
+    <div id="panel-ownerDetails" class="panel">
+        <div class="panel-title">
+            <button class="back-btn" onclick="closePanel('ownerDetails')">✕</button>
+            👤 Owner Details
+        </div>
+        <div style="padding:10px 0; line-height:2;">
+            <div><strong>Developer:</strong> M. SARKER</div>
+            <div><strong>Product:</strong> SARKER Bind Tool</div>
+            <div><strong>Version:</strong>(Premium / Secure)</div>
+            <div><strong>Status:</strong> Online</div>
+            <hr style="border-color:#2d2d44; margin:15px 0;">
+            <div style="color:#fdcb6e;">Thank you for using Our Bind Tool!</div>
+            <div style="color:#8395a7;">This tool was created to provide a fast, secure,</div>
+            <div style="color:#8395a7;">and reliable way to manage Garena Bind Accounts.</div>
+            <div style="color:#8395a7;">Please report any bugs directly on Telegram.</div>
+        </div>
+        <button class="btn btn-secondary" onclick="closePanel('ownerDetails')">Close</button>
+        <div id="output-ownerDetails" class="output"></div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        ©️ Sarker Bind Tool &bull; Made with ❤️ by M. Sarker
+    </div>
+</div>
+
+<script>
+    // ─── Panel Controls ───
+    function openPanel(id) {
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        document.getElementById('panel-' + id).classList.add('active');
+        document.getElementById('menuGrid').style.display = 'none';
+    }
+
+    function closePanel(id) {
+        document.getElementById('panel-' + id).classList.remove('active');
+        document.getElementById('menuGrid').style.display = 'grid';
+        // Clear output
+        const out = document.getElementById('output-' + id);
+        if (out) { out.classList.remove('show'); out.innerHTML = ''; }
+    }
+
+    // ─── Method toggle for unbind ───
+    document.addEventListener('DOMContentLoaded', function() {
+        const unbindMethod = document.getElementById('unbindMethod');
+        if (unbindMethod) {
+            unbindMethod.addEventListener('change', function() {
+                document.getElementById('unbindOtpGroup').style.display = this.value === '1' ? 'block' : 'none';
+                document.getElementById('unbindSecGroup').style.display = this.value === '2' ? 'block' : 'none';
+            });
+        }
+
+        const changeMethod = document.getElementById('changeMethod');
+        if (changeMethod) {
+            changeMethod.addEventListener('change', function() {
+                document.getElementById('changeOtpGroup').style.display = this.value === '1' ? 'block' : 'none';
+                document.getElementById('changeSecGroup').style.display = this.value === '2' ? 'block' : 'none';
+            });
+        }
+    });
+
+    // ─── API Execute ───
+    function execute(action) {
+        const outputEl = document.getElementById('output-' + action.replace(/Send|Final/, ''));
+        if (!outputEl) return;
+        outputEl.classList.add('show');
+        outputEl.innerHTML = '<span class="spinner"></span> Processing...';
+
+        let data = { action: action };
+
+        // Gather data based on action
+        const actions = {
+            'bindInfo': { token: 'bindInfoToken' },
+            'bindEmailSend': { token: 'bindEmailToken', email: 'bindEmailAddr' },
+            'bindEmailFinal': { token: 'bindEmailToken', email: 'bindEmailAddr', otp: 'bindEmailOtp', sec: 'bindEmailSec' },
+            'unbindEmail': { token: 'unbindToken', method: 'unbindMethod', otp: 'unbindOtp', sec: 'unbindSec' },
+            'changeBind': { token: 'changeToken', method: 'changeMethod', otp: 'changeOtp', sec: 'changeSec', newEmail: 'changeNewEmail', newOtp: 'changeNewOtp' },
+            'cancelBind': { token: 'cancelToken' },
+            'eatToToken': { eat: 'eatInput' },
+            'revokeToken': { token: 'revokeToken' },
+            'loginHistory': { token: 'historyToken' },
+            'boundAccounts': { token: 'boundToken' }
+        };
+
+        const fields = actions[action] || {};
+        for (const [key, elId] of Object.entries(fields)) {
+            const el = document.getElementById(elId);
+            if (el) {
+                if (el.type === 'select-one') {
+                    data[key] = el.value;
+                } else {
+                    data[key] = el.value.trim();
+                }
+            }
+        }
+
+        fetch('/api', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+        .then(res => res.json())
+        .then(result => {
+            if (result.error) {
+                outputEl.innerHTML = `<span class="error">❌ ${result.error}</span>`;
+            } else {
+                outputEl.innerHTML = result.output || '<span class="success">✅ Done</span>';
+            }
+        })
+        .catch(err => {
+            outputEl.innerHTML = `<span class="error">❌ Network Error: ${err.message}</span>`;
+        });
+    }
+</script>
+
+</body>
+</html>
